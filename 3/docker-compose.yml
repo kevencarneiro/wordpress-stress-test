@@ -1,0 +1,76 @@
+version: '3'
+services:
+  mysql:
+    image: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: naosei
+    networks:
+     - database
+    restart: always
+  
+  wordpress1:
+    image: wordpress
+    environment:
+      WORDPRESS_DB_PASSWORD: naosei
+      WORDPRESS_CONFIG_EXTRA: "define('WP_HOME','http://localhost'); define('WP_SITEURL','http://localhost');"
+    networks:
+      - application
+      - database
+    volumes:
+      - ../content:/var/www/html
+    restart: always
+
+  wordpress2:
+    image: wordpress
+    environment:
+      WORDPRESS_DB_PASSWORD: naosei
+      WORDPRESS_CONFIG_EXTRA: "define('WP_HOME','http://localhost'); define('WP_SITEURL','http://localhost');"
+    networks:
+      - application
+      - database
+    volumes:
+      - ../content:/var/www/html
+    restart: always
+
+  wordpress3:
+    image: wordpress
+    environment:
+      WORDPRESS_DB_PASSWORD: naosei
+      WORDPRESS_CONFIG_EXTRA: "define('WP_HOME','http://localhost'); define('WP_SITEURL','http://localhost');"
+    networks:
+      - application
+      - database
+    volumes:
+      - ../content:/var/www/html
+    restart: always
+
+  wordpress:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - NGINX_HOST=localhost
+    ports:
+      - 80:80
+    networks: 
+      - public
+      - application
+    restart: always
+
+  locust:
+    image: grubykarol/locust
+    environment:
+      LOCUST_OPTS: -c 10 -r 10 -f /locust/locustfile.py
+      ATTACKED_HOST: http://wordpress
+    ports:
+      - 8089:8089
+    volumes:
+      - ../test:/locust
+    networks: 
+      - public
+      - application
+
+networks:
+  database:
+  application:
+  public:
